@@ -265,13 +265,13 @@ vec2 map_the_world(in vec3 p)
 
 	//return mapFidgetSpinner(p);
 	
-	//vec2 fidgetSpinner = mapFidgetSpinner(p);
-	//vec2 planeFloor = vec2(sdfPlane(p, vec3(0.0, -3.0, 0.0), vec3(0.0, 1.0, 0.0), 1.0), 3.0);
-	//vec2 pyramid = vec2(sdfPyramid(p, vec3(0.0, -4.0, 0.0), 4.0), 3.0);
-	//return opUnion(opUnion(fidgetSpinner, planeFloor), pyramid);
+	vec2 fidgetSpinner = mapFidgetSpinner(p);
+	vec2 planeFloor = vec2(sdfPlane(p, vec3(0.0, -3.0, 0.0), vec3(0.0, 1.0, 0.0), 1.0), 3.0);
+	vec2 pyramid = vec2(sdfPyramid(p, vec3(0.0, -4.0, 0.0), 4.0), 3.0);
+	return opUnion(opUnion(fidgetSpinner, planeFloor), pyramid);
 
-	vec2 terrain = mapTerrain(p);
-	return terrain;
+	//vec2 terrain = mapTerrain(p);
+	//return terrain;
 
 	//vec2 sdfPyramid()
 	//return mapMandelbulb(p);
@@ -501,10 +501,10 @@ vec3 calcPointColorThreeSpot(vec2 result, vec3 current_position, float distToCam
 		vec3 pixelColor = 0.4 * phongPointLight(lightArray[i], L, current_position, distToCamera);
 		
 		// Calculate shadows.
-		//vec3 gradient_normal = calculate_normal(current_position, distToCamera);
-		//vec3 shadowStart = current_position + gradient_normal * 0.1;	// Moving the shadow start out a bit to prevent initial start intersection.
-		//float shadowVal = soft_shadow(shadowStart, L, 0.1, toLightDist);
-		//pixelColor = mix( pixelColor*0.01, pixelColor, shadowVal);
+		vec3 gradient_normal = calculate_normal(current_position, distToCamera);
+		vec3 shadowStart = current_position + gradient_normal * 0.1;	// Moving the shadow start out a bit to prevent initial start intersection.
+		float shadowVal = soft_shadow(shadowStart, L, 0.1, toLightDist);
+		pixelColor = mix( pixelColor*0.01, pixelColor, shadowVal);
 		
 		// Apply fog.
 		float fog = fog_value(distToCamera);
@@ -545,9 +545,9 @@ vec3 calcPointColorSun(vec2 result, vec3 current_position, float distToCamera) {
 	vec3 lightColor = 0.6 * phongDirectionalLight(lightSun, L, N);
 	
 	// Calculate shadows.
-	//vec3 shadowStart = current_position + (N * 0.05);	// Moving the shadow start out a bit to prevent initial start intersection.
-	//float shadowVal = soft_shadow(shadowStart, L, 0.001, toLightDist);
-	//lightColor = mix(lightColor*0.1, lightColor, shadowVal);
+	vec3 shadowStart = current_position + (N * 0.05);	// Moving the shadow start out a bit to prevent initial start intersection.
+	float shadowVal = soft_shadow(shadowStart, L, 0.001, toLightDist);
+	lightColor = mix(lightColor*0.1, lightColor, shadowVal);
 	
 	// Apply fog.
 	float fog = fog_value(distToCamera);
@@ -571,13 +571,10 @@ vec3 calcPointColorSun(vec2 result, vec3 current_position, float distToCamera) {
 void main() 
 {
 
-	//vec4 ambientLight = vec4(.2, .2, .4, 1);
-
 	//// RAY MARCHING
 	//// Shift UV to be from -1 to 1 on both axes.
 	vec2 uv_mod = uv * 2.0 - 1.0;
 	uv_mod.x *= aspectRatio;	// Correct for aspect ratio.
-	//uv_mod.y *= -1.0;	// Positive y should be up.
 
 
 	// Calculate the ray direction.
@@ -601,9 +598,9 @@ void main()
 
 
 	// ISSUE: modColor.y is not returning correct value for positions under the camera.
-	vec3 modColor = mod(current_position, 1.0);
-	outColor = vec4(0.1, modColor.y, 0.1, 0.0);
-	return; 
+	//vec3 modColor = mod(current_position, 1.0);
+	//outColor = vec4(0.1, modColor.y, 0.1, 0.0);
+	//return; 
 
 	float distToCamera = length(current_position - cameraPos);
 
